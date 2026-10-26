@@ -39,3 +39,8 @@ output/
 
 # Third-party cloned repos (large, not our code)
 third_party/
+
+# Shared by all the ARCLab repos
+.pytest_cache/
+.ruff_cache/
+.claude/

@@ -1,5 +1,9 @@
 # endonav-exploration
 
+> **Status:** paused, last worked on in April 2026. Archived on GitHub; unarchive it to pick it up again.
+>
+> Part of my endoscopic-navigation experiments at UC San Diego's ARCLab: [all the repos](https://github.com/search?q=user%3ATylerFlar+topic%3Aucsd-arclab&type=repositories).
+
 Reactive kidney endoscope exploration system that navigates a kidney's collecting system (tree-like structure: renal pelvis -> major calyces -> minor calyces) to find and zap kidney stones. No global SLAM or 3D reconstruction -- purely reactive with topological navigation.
 
 ## Architecture
