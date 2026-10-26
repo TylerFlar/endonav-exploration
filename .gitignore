@@ -36,3 +36,6 @@ output/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Third-party cloned repos (large, not our code)
+third_party/

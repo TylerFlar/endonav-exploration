@@ -249,8 +249,9 @@ class ExplorationStateMachine:
         for jn in junction_nodes:
             unexplored += max(0, jn.branches_total - jn.branches_explored)
 
+        eg = self.config.expected_graph
         coverage_complete = (
-            terminal_count >= self.config.min_expected_branches
+            terminal_count >= eg.min_terminal_branches
             and unexplored == 0
         )
 
@@ -260,15 +261,14 @@ class ExplorationStateMachine:
             "dead_end_nodes": terminal_count,
             "total_edges": len(self.edges),
             "unexplored_branches": unexplored,
-            "min_expected_branches": self.config.min_expected_branches,
-            "max_expected_branches": self.config.max_expected_branches,
+            "expected_anatomy": eg.description,
+            "expected_terminal_branches": f"{eg.min_terminal_branches}-{eg.max_terminal_branches}",
             "coverage_complete": coverage_complete,
             "coverage_note": (
                 "Coverage appears complete"
                 if coverage_complete
                 else f"Incomplete: found {terminal_count} terminal branches "
-                f"(expected {self.config.min_expected_branches}-"
-                f"{self.config.max_expected_branches}), "
+                f"(expected {eg.min_terminal_branches}-{eg.max_terminal_branches}), "
                 f"{unexplored} unexplored branches remain"
             ),
         }

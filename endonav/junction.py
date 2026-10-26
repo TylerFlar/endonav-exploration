@@ -101,15 +101,16 @@ class JunctionDetector:
         else:
             deep_fraction = 0.5  # assume open if no depth
 
-        # Junction detection: only if depth shows a large open area
-        if deep_fraction >= self.config.depth_open_area_threshold:
-            blob_count, blobs, dark_mask = self._find_branches(gray, depth_map)
-        else:
-            blob_count, blobs, dark_mask = 0, [], np.zeros_like(gray)
+        # Always run branch detection (needed for dead end detection too)
+        blob_count, blobs, dark_mask = self._find_branches(gray, depth_map)
 
         # Classify
-        if blob_count >= self.config.min_branch_count:
-            # Check blob size ratio
+        min_branches = self.config.expected_graph.min_branch_count
+        if (
+            blob_count >= min_branches
+            and deep_fraction >= self.config.depth_open_area_threshold
+        ):
+            # Junction: 3+ blobs AND depth gate is open
             areas = sorted([b.area for b in blobs], reverse=True)
             ratio = areas[0] / max(areas[-1], 1)
             if ratio <= self.config.max_blob_ratio:
@@ -117,13 +118,9 @@ class JunctionDetector:
             else:
                 raw_type = LumenType.SINGLE_LUMEN
         elif blob_count == 0:
-            # Dead end: no branch openings found AND depth range is small
-            # (all tissue at similar distance = no lumen openings)
-            depth_range = float(valid_depth.max() - valid_depth.min()) if len(valid_depth) > 1 else 0
-            if depth_range < self.config.dead_end_shallow_threshold:
-                raw_type = LumenType.DEAD_END
-            else:
-                raw_type = LumenType.SINGLE_LUMEN
+            # Dead end: no branch openings found at the tight threshold.
+            # Temporal filter (8 consecutive frames) prevents false triggers.
+            raw_type = LumenType.DEAD_END
         else:
             raw_type = LumenType.SINGLE_LUMEN
 
